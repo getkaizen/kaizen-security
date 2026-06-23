@@ -21,10 +21,16 @@ def kaizen_filter(kaizen, enforce: bool = True):
             pass
         verdict = kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"arguments": args}))
         if enforce and verdict.blocked:
+            msg = f"Blocked by Kaizen: {verdict.reason}"
             try:
-                context.result = f"Blocked by Kaizen: {verdict.reason}"
+                from semantic_kernel.functions.function_result import FunctionResult
+
+                context.result = FunctionResult(function=context.function.metadata, value=msg)
             except Exception:
-                pass
+                try:
+                    context.result = msg
+                except Exception:
+                    pass
             return  # do not call next: the function is not invoked
         await next(context)
 

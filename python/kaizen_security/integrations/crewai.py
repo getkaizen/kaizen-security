@@ -27,5 +27,10 @@ def guard_tool(kaizen, tool, enforce: bool = True):
     try:
         setattr(tool, target, guarded)
     except Exception:
-        pass
+        # CrewAI BaseTool is a Pydantic model and rejects normal attribute
+        # assignment; bypass its __setattr__ to shadow the method.
+        try:
+            object.__setattr__(tool, target, guarded)
+        except Exception:
+            pass
     return tool
