@@ -1,0 +1,45 @@
+[project]
+name = "kaizen-security"
+version = "0.1.0"
+description = "Pluggable enforcement for AI agent actions. Inspect every tool call and block known-bad."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Kaizen Security" }]
+keywords = ["ai", "agents", "security", "mcp", "guardrails"]
+dependencies = []
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Security",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0,<9.0"]
+openai-agents = ["openai-agents>=0.1"]
+langchain = ["langchain-core>=0.1"]
+opentelemetry = ["opentelemetry-api>=1.20"]
+
+[project.scripts]
+kaizen-mcp = "kaizen_security.mcp_shim:main"
+
+[project.urls]
+Homepage = "https://getkaizen.io"
+Documentation = "https://docs.getkaizen.io"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kaizen_security*"]
+
+[tool.setuptools.package-data]
+kaizen_security = ["py.typed"]

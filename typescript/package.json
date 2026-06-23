@@ -1,0 +1,23 @@
+{
+  "name": "kaizen-security",
+  "version": "0.1.0",
+  "description": "Pluggable enforcement for AI agent actions. Inspect every tool call and block known-bad.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./vercel": { "types": "./dist/integrations/vercel.d.ts", "import": "./dist/integrations/vercel.js" }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "keywords": ["ai", "agents", "security", "mcp", "guardrails"],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^2.1.0"
+  }
+}
