@@ -1,6 +1,6 @@
 {
   "name": "kaizen-security",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Pluggable enforcement for AI agent actions. Inspect every tool call and block known-bad.",
   "type": "module",
   "main": "dist/index.js",

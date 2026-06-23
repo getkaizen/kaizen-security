@@ -1,6 +1,8 @@
-# kaizen-security
+# Kaizen Security
 
-Pluggable enforcement for AI agent actions. Inspect every tool call, skill load, or outbound connection, and block the known-bad before it reaches your data. Zero runtime dependencies.
+**Runtime security for the AI agents you build.** Attach Kaizen to your agent and it inspects every action, a tool call, a connection, a file or data access, and blocks what falls outside the agent's normal behavior. In your environment, as it happens.
+
+Docs: [docs.getkaizen.io](https://docs.getkaizen.io) · Console: [app.getkaizen.io](https://app.getkaizen.io) · Source: [github.com/getkaizen/kaizen-security](https://github.com/getkaizen/kaizen-security)
 
 ## Install
 
@@ -8,58 +10,80 @@ Pluggable enforcement for AI agent actions. Inspect every tool call, skill load,
 pip install kaizen-security
 ```
 
+The core is dependency-free and stdlib-only.
+
 ## Quickstart
 
 ```python
 from kaizen_security import Kaizen
 
-kz = Kaizen(api_key="kz_live_...")          # syncs policy from the control plane
+kz = Kaizen(api_key="kz_live_...", agent="support-bot")
 
-verdict = kz.inspect(tool="clawhub2", publisher="hightower6eu", target="91.92.242.30")
+verdict = kz.inspect(tool="export_file", publisher="external", target="45.9.148.108")
 if verdict.blocked:
-    print(verdict.reason)                    # blocked by policy: blacklisted publisher, ...
-    for f in verdict.evidence:
-        print(f.kind, f.value)
+    raise RuntimeError(verdict.reason)
 ```
 
-Raise on a block instead of branching:
+Create a key in the console under **API keys**. Without a key the client still enforces any policies you pass locally.
+
+## Attach to your framework
+
+One line, any stack. Each adapter inspects every tool call; a blocked call returns a refusal instead of running.
+
+**OpenAI Agents**
 
 ```python
-from kaizen_security import KaizenBlocked
-
-try:
-    kz.enforce(tool="clawhub2", publisher="hightower6eu")
-except KaizenBlocked as e:
-    handle(e.verdict)
+from kaizen_security.integrations.openai_agents import KaizenHooks
+await Runner.run(agent, "...", hooks=KaizenHooks(kz, enforce=True))
 ```
 
-Wrap a tool function:
+**LangChain**
 
 ```python
-@kz.guard
-def call_tool(name, **kwargs):
+from kaizen_security.integrations.langchain import guard_tool
+tools = [guard_tool(kz, t) for t in tools]
+```
+
+**CrewAI**
+
+```python
+from kaizen_security.integrations.crewai import guard_tool
+safe = guard_tool(kz, my_tool)
+```
+
+**Semantic Kernel**
+
+```python
+from kaizen_security.integrations.semantic_kernel import kaizen_filter
+kernel.add_filter("function_invocation", kaizen_filter(kz))
+```
+
+**LlamaIndex**
+
+```python
+from kaizen_security.integrations.llamaindex import guard_tool
+safe = guard_tool(kz, my_tool)
+```
+
+**Pydantic AI**
+
+```python
+from kaizen_security.integrations.pydantic_ai import guard
+
+@agent.tool_plain
+@guard(kz)
+def lookup(q: str) -> str:
     ...
 ```
 
-## Run it fully local, no account
+**MCP** — run `kaizen-mcp` as a shim in front of any MCP server.
 
-```python
-from kaizen_security import Kaizen, Policy
+## How it works
 
-policy = Policy(mode="blocklist", rules={
-    "publishers": ["hightower6eu"],
-    "ips": ["91.92.242.30"],
-    "skill_patterns": [r"^clawhub[0-9]*$"],
-})
-kz = Kaizen(policies=[policy], report=False)
-```
+A fast local check blocks known-bad before it runs. An isolated Observer learns each agent's behavior and flags real deviations, in your own environment. See the [architecture](https://docs.getkaizen.io/architecture).
 
-## The contract
+There is a TypeScript SDK too: `npm install kaizen-security`.
 
-`inspect(action) -> Verdict(decision, reason, evidence)` where `decision` is `allow` or `block`. Enforcement runs locally for low latency. When an `api_key` is set, the client syncs policy from the control plane and reports verdicts back for the dashboard, fire and forget so it never adds latency.
+## License
 
-## Modes
-
-- `blocklist`: block on a match against blacklisted publishers, IPs, domains, skill patterns, or hashes.
-- `allowlist`: allow only approved publishers or tools, block the rest.
-- `correlation`: flag a risky session sequence, for example a sensitive read followed by an outbound connect.
+Apache-2.0
