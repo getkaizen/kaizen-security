@@ -38,7 +38,7 @@ class KaizenCallbackHandler(_Base):
 
     def on_tool_start(self, serialized, input_str, **kwargs):
         name = (serialized or {}).get("name") or "tool"
-        self.kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"input": input_str}))
+        self.kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"source": "langchain", "input": input_str}))
 
 
 def guard_tool(kaizen, tool, enforce: bool = True):
@@ -49,7 +49,7 @@ def guard_tool(kaizen, tool, enforce: bool = True):
     name = getattr(tool, "name", None) or "tool"
 
     def _wrapped(**kwargs):
-        verdict = kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"input": kwargs}))
+        verdict = kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"source": "langchain", "input": kwargs}))
         if enforce and verdict.blocked:
             return f"Blocked by Kaizen: {verdict.reason}"
         return tool.invoke(kwargs)

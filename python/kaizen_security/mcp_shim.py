@@ -54,7 +54,7 @@ def intercept(line: str, kz: Kaizen):
         return line, None  # not JSON we understand; pass through untouched
     if isinstance(msg, dict) and msg.get("method") == "tools/call":
         params = msg.get("params") or {}
-        action = Action(kind="tool_call", tool=params.get("name"), metadata={"arguments": params.get("arguments")})
+        action = Action(kind="tool_call", tool=params.get("name"), metadata={"source": "mcp", "arguments": params.get("arguments")})
         verdict = kz.inspect(action)
         if verdict.blocked:
             return None, _block_response(msg.get("id"), verdict.reason)

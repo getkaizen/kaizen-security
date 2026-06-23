@@ -19,7 +19,7 @@ def kaizen_filter(kaizen, enforce: bool = True):
             args = dict(getattr(context, "arguments", {}) or {})
         except Exception:
             pass
-        verdict = kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"arguments": args}))
+        verdict = kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"source": "semantic-kernel", "arguments": args}))
         if enforce and verdict.blocked:
             msg = f"Blocked by Kaizen: {verdict.reason}"
             try:

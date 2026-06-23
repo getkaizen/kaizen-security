@@ -10,7 +10,7 @@ export function guardTool(kaizen: Kaizen, name: string, tool: any) {
   return {
     ...tool,
     execute: async (args: any, options?: any) => {
-      const verdict = kaizen.inspect({ kind: "tool_call", tool: name, metadata: { input: args } });
+      const verdict = kaizen.inspect({ kind: "tool_call", tool: name, metadata: { source: "vercel", input: args } });
       if (isBlocked(verdict)) return `Blocked by Kaizen: ${verdict.reason}`;
       return orig ? orig(args, options) : undefined;
     },

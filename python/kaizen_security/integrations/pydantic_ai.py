@@ -23,7 +23,7 @@ def guard(kaizen, fn=None, *, tool=None, enforce: bool = True):
 
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
-            verdict = kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"arguments": kwargs}))
+            verdict = kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"source": "pydantic-ai", "arguments": kwargs}))
             if enforce and verdict.blocked:
                 return f"Blocked by Kaizen: {verdict.reason}"
             return f(*args, **kwargs)

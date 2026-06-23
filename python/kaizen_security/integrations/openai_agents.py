@@ -46,7 +46,7 @@ class KaizenHooks(_Base):
         self.enforce = enforce
 
     async def on_tool_start(self, context, agent, tool):
-        action = Action(kind="tool_call", tool=_tool_name(tool), metadata={"arguments": _tool_args(context)})
+        action = Action(kind="tool_call", tool=_tool_name(tool), metadata={"source": "openai-agents", "arguments": _tool_args(context)})
         verdict = self.kaizen.inspect(action)
         if self.enforce and verdict.blocked:
             reject = getattr(context, "reject_tool", None)

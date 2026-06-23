@@ -19,7 +19,7 @@ def guard_tool(kaizen, tool, enforce: bool = True):
     orig = getattr(tool, target)
 
     def guarded(*args, **kwargs):
-        verdict = kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"arguments": kwargs or list(args)}))
+        verdict = kaizen.inspect(Action(kind="tool_call", tool=name, metadata={"source": "crewai", "arguments": kwargs or list(args)}))
         if enforce and verdict.blocked:
             return f"Blocked by Kaizen: {verdict.reason}"
         return orig(*args, **kwargs)
