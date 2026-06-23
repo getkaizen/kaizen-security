@@ -1,5 +1,5 @@
-import { isBlocked } from "../models";
-import { Kaizen } from "../client";
+import { isBlocked } from "../models.js";
+import { Kaizen } from "../client.js";
 
 /**
  * Wrap one Vercel AI SDK tool so Kaizen inspects each call. A blocked call

@@ -1,4 +1,4 @@
-import { Action, Policy, Verdict, allow, block } from "./models";
+import { Action, Policy, Verdict, allow, block } from "./models.js";
 
 const MAX_PATTERN = 200;
 const MAX_TOOL = 512;

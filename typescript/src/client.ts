@@ -1,5 +1,5 @@
-import { Action, Policy, Verdict, allow, block, isBlocked } from "./models";
-import { evaluate } from "./engine";
+import { Action, Policy, Verdict, allow, block, isBlocked } from "./models.js";
+import { evaluate } from "./engine.js";
 
 export class KaizenBlocked extends Error {
   verdict: Verdict;
