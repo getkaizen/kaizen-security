@@ -65,6 +65,21 @@ egress/       the egress collector, for ground-truth observation
 examples/     runnable examples
 ```
 
+## Integrations
+
+**Available now:** Python SDK, TypeScript SDK, MCP shim, OpenAI Agents, LangChain, Vercel AI SDK, CrewAI, Semantic Kernel, LlamaIndex.
+
+**Coming soon:** Copilot Studio, Agent 365, Amazon Bedrock.
+
+**Export verdicts to:** OpenTelemetry, webhooks, Datadog, Splunk, Slack, PagerDuty.
+
+## Start here
+
+1. [Quickstart](https://docs.getkaizen.io/quickstart/), attach and see your first verdict.
+2. [Examples](examples/), runnable scenarios, including the [ACA sandboxes case study](examples/aca-sandbox/).
+3. [SDK reference](python/README.md), the Python and TypeScript surface.
+4. [Docs](https://docs.getkaizen.io), concepts, observation depth, the sidecar, the reasoning check.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Issues and pull requests welcome.
