@@ -77,7 +77,7 @@ Two stages: a deterministic check on every action (the learned baseline plus wha
 
 **Coming soon:** Copilot Studio, Agent 365, Amazon Bedrock.
 
-**Export verdicts to:** OpenTelemetry, webhooks, Datadog, Splunk, Grafana, Slack, PagerDuty.
+**Export verdicts to:** OpenTelemetry, webhooks, Datadog, Splunk, Grafana, Microsoft Sentinel, Slack, PagerDuty.
 
 ## How Kaizen compares
 
