@@ -71,7 +71,7 @@ examples/     runnable examples
 
 **Coming soon:** Copilot Studio, Agent 365, Amazon Bedrock.
 
-**Export verdicts to:** OpenTelemetry, webhooks, Datadog, Splunk, Slack, PagerDuty.
+**Export verdicts to:** OpenTelemetry, webhooks, Datadog, Splunk, Grafana, Slack, PagerDuty.
 
 ## Start here
 
