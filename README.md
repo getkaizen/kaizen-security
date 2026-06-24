@@ -11,6 +11,8 @@
 
 These are the open Kaizen clients. The managed control plane and console are at **[getkaizen.io](https://getkaizen.io)**. Full docs: **[docs.getkaizen.io](https://docs.getkaizen.io)**.
 
+![The Kaizen console: every action, one verdict](assets/console.png)
+
 ## Install
 
 ```bash
@@ -78,6 +80,10 @@ Two stages: a deterministic check on every action (the learned baseline plus wha
 **Coming soon:** Copilot Studio, Agent 365, Amazon Bedrock.
 
 **Export verdicts to:** OpenTelemetry, webhooks, Datadog, Splunk, Grafana, Microsoft Sentinel, Slack, PagerDuty.
+
+Verdicts land in your SIEM. Here, Kaizen anomalies in a Microsoft Sentinel Log Analytics workspace:
+
+![Kaizen verdicts in Microsoft Sentinel](assets/sentinel.jpg)
 
 ## How Kaizen compares
 
