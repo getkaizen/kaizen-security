@@ -1,6 +1,6 @@
 # Kaizen Security
 
-**Runtime security for the AI agents you build.** Attach Kaizen to your agent and it inspects every action, a tool call, a connection, a file or data access, and blocks what falls outside the agent's normal behavior. In your environment, as it happens.
+**Runtime security for the AI agents you build.** Attach Kaizen to an agent and it inspects every action (a tool call, a connection, a file or data access), learns the agent's normal behaviour, and flags what falls outside it. It can also block known-bad outright. It runs in your environment, as the action happens.
 
 Docs: [docs.getkaizen.io](https://docs.getkaizen.io) · Console: [app.getkaizen.io](https://app.getkaizen.io) · Source: [github.com/getkaizen/kaizen-security](https://github.com/getkaizen/kaizen-security)
 
@@ -19,70 +19,36 @@ from kaizen_security import Kaizen
 
 kz = Kaizen(api_key="kz_live_...", agent="support-bot")
 
-verdict = kz.inspect(tool="export_file", publisher="external", target="45.9.148.108")
+verdict = kz.inspect(tool="issue_refund", target="api.stripe.com")
 if verdict.blocked:
     raise RuntimeError(verdict.reason)
 ```
 
-Create a key in the console under **API keys**. Without a key the client still enforces any policies you pass locally.
-
-## Attach to your framework
-
-One line, any stack. Each adapter inspects every tool call; a blocked call returns a refusal instead of running.
-
-**OpenAI Agents**
+## Wrap a tool so it is checked automatically
 
 ```python
-from kaizen_security.integrations.openai_agents import KaizenHooks
-await Runner.run(agent, "...", hooks=KaizenHooks(kz, enforce=True))
-```
-
-**LangChain**
-
-```python
-from kaizen_security.integrations.langchain import guard_tool
-tools = [guard_tool(kz, t) for t in tools]
-```
-
-**CrewAI**
-
-```python
-from kaizen_security.integrations.crewai import guard_tool
-safe = guard_tool(kz, my_tool)
-```
-
-**Semantic Kernel**
-
-```python
-from kaizen_security.integrations.semantic_kernel import kaizen_filter
-kernel.add_filter("function_invocation", kaizen_filter(kz))
-```
-
-**LlamaIndex**
-
-```python
-from kaizen_security.integrations.llamaindex import guard_tool
-safe = guard_tool(kz, my_tool)
-```
-
-**Pydantic AI**
-
-```python
-from kaizen_security.integrations.pydantic_ai import guard
-
-@agent.tool_plain
-@guard(kz)
-def lookup(q: str) -> str:
+@kz.guard(tool="send_email")
+def send_email(to, body):
     ...
 ```
 
-**MCP** — run `kaizen-mcp` as a shim in front of any MCP server.
+A blocked action raises `KaizenBlocked`.
 
-## How it works
+## Declare what an agent should do
 
-A fast local check blocks known-bad before it runs. An isolated Observer learns each agent's behavior and flags real deviations, in your own environment. See the [architecture](https://docs.getkaizen.io/architecture).
+Tell Kaizen the tools and destinations an agent is expected to use. Anything outside the declaration is flagged as undeclared.
 
-There is a TypeScript SDK too: `npm install kaizen-security`.
+```python
+kz.declare(tools=["lookup_order", "issue_refund"], destinations=["api.stripe.com"])
+```
+
+## How it decides
+
+Kaizen evaluates in two stages: a deterministic check on every action (the learned baseline plus your declaration), and a selective reasoning check (your model, your key) for the cases a rule cannot settle. See [how Kaizen decides](https://docs.getkaizen.io/reasoning/).
+
+## Observation depth
+
+The SDK is the lightest way to attach, and it is cooperative: it sees what you route through it. For ground truth, route the agent's egress through the Kaizen [sidecar](https://docs.getkaizen.io/sidecar/). The same Observer and the same verdict serve every attachment; you only change how deeply you see. See [observation depth](https://docs.getkaizen.io/observation-depth/).
 
 ## License
 
