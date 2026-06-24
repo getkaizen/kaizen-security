@@ -55,6 +55,12 @@ class Reporter:
         )
         urllib.request.urlopen(req, timeout=self.timeout, context=_SSL).close()
 
+    def declare(self, agent: str, tools=None, destinations=None) -> None:
+        try:
+            self._post(f"/v1/agents/{agent}/manifest", {"tools": tools or [], "destinations": destinations or []})
+        except Exception:
+            pass
+
     def send(self, agent: str, action: Action, verdict: Verdict) -> None:
         self._ensure_workers()
         payload = {

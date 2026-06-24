@@ -105,6 +105,13 @@ class Kaizen:
             raise KaizenBlocked(v)
         return v
 
+    def declare(self, tools=None, destinations=None) -> None:
+        """Declare what this agent is expected to do: the tools it uses and the
+        destinations it connects to. Anything observed outside this is flagged as
+        undeclared. Requires an api_key; no-op without one."""
+        if self._reporter:
+            self._reporter.declare(self.agent, tools=tools, destinations=destinations)
+
     def _correlate(self, a: Action, v: Verdict) -> Verdict:
         # v1 session rule: a sensitive read earlier, then an outbound connect now.
         for p in self.policies:
