@@ -1,0 +1,16 @@
+name: readme-guard
+
+on: [push, pull_request]
+
+jobs:
+  sections:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: README keeps its key sections
+        run: |
+          missing=0
+          for s in "Watch it catch an attack" "red-team/     the attack" "How Kaizen compares" "## What is inside" "## Start here"; do
+            if ! grep -qF "$s" README.md; then echo "README missing section: $s"; missing=1; fi
+          done
+          [ "$missing" = "0" ] && echo "All key README sections present" || exit 1
