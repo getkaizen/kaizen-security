@@ -1,6 +1,6 @@
 # Kaizen Security
 
-**Runtime security for the AI agents you build.** Attach Kaizen to your agent and it inspects every action, a tool call, a connection, a file or data access, and blocks what falls outside the agent's normal behavior. In your environment, as it happens.
+**Runtime security for the AI agents you build.** Attach Kaizen to an agent and it inspects every action (a tool call, a connection, a file or data access), learns the agent's normal behaviour, and flags what falls outside it. It can also block known-bad outright. It runs in your environment, as the action happens.
 
 Docs: [docs.getkaizen.io](https://docs.getkaizen.io) · Console: [app.getkaizen.io](https://app.getkaizen.io) · Source: [github.com/getkaizen/kaizen-security](https://github.com/getkaizen/kaizen-security)
 
@@ -17,11 +17,11 @@ import { Kaizen } from "kaizen-security";
 
 const kz = new Kaizen({ apiKey: "kz_live_...", agent: "support-bot" });
 
-const v = kz.inspect({ tool: "export_file", target: "45.9.148.108" });
-if (v.decision === "block") throw new Error(v.reason);
+const verdict = await kz.inspect({ tool: "issue_refund", target: "api.stripe.com" });
+if (verdict.blocked) throw new Error(verdict.reason);
 ```
 
-Create a key in the console under **API keys**. Without a key the client still enforces any policies you pass locally.
+Create a key in the console under **API keys**.
 
 ## Vercel AI SDK
 
@@ -30,15 +30,16 @@ Wrap your tools so Kaizen inspects every call. A blocked call returns a refusal 
 ```ts
 import { guardTools } from "kaizen-security/vercel";
 
-const tools = guardTools(kz, {
-  lookupOrder,
-  issueRefund,
-});
+const tools = guardTools(kz, { lookupOrder, issueRefund });
 ```
 
-## How it works
+## How it decides
 
-A fast local check blocks known-bad before it runs. An isolated Observer learns each agent's behavior and flags real deviations, in your own environment. See the [architecture](https://docs.getkaizen.io/architecture).
+Kaizen evaluates in two stages: a deterministic check on every action (the learned baseline plus your declaration), and a selective reasoning check (your model, your key) for the cases a rule cannot settle. See [how Kaizen decides](https://docs.getkaizen.io/reasoning/).
+
+## Observation depth
+
+The SDK is the lightest way to attach, and it is cooperative: it sees what you route through it. For ground truth, route the agent's egress through the Kaizen [sidecar](https://docs.getkaizen.io/sidecar/). The same Observer and the same verdict serve every attachment. See [observation depth](https://docs.getkaizen.io/observation-depth/).
 
 There is a Python SDK too: `pip install kaizen-security`.
 

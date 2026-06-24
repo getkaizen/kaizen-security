@@ -17,6 +17,8 @@ export interface Finding {
 
 export interface Verdict {
   decision: Decision;
+  /** Convenience flag, true when decision is "block". Mirrors the Python SDK. */
+  blocked: boolean;
   reason: string;
   evidence: Finding[];
 }
@@ -35,9 +37,9 @@ export function isBlocked(v: Verdict): boolean {
 }
 
 export function allow(reason = "no policy matched"): Verdict {
-  return { decision: "allow", reason, evidence: [] };
+  return { decision: "allow", blocked: false, reason, evidence: [] };
 }
 
 export function block(reason: string, evidence: Finding[] = []): Verdict {
-  return { decision: "block", reason, evidence };
+  return { decision: "block", blocked: true, reason, evidence };
 }
