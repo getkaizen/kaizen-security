@@ -1,0 +1,30 @@
+name: red-team
+
+on:
+  push:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      - run: pytest red-team/test_corpus.py -q
+
+  live:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python red-team/corpus.py
+        env:
+          KAIZEN_API_KEY: ${{ secrets.KAIZEN_CORPUS_KEY }}
