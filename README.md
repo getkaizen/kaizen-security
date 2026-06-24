@@ -7,6 +7,8 @@
 
 **Runtime security for the AI agents you build.** Kaizen inspects every action an agent takes (a tool call, a connection, a file or data access), learns its normal behaviour, flags what falls outside it, and can block known-bad. It runs in your own environment, as the action happens.
 
+**Sandboxes make agents safe to run. Kaizen makes them safe to trust.** A sandbox (Azure Container Apps, OpenAI, Docker) contains an agent; Kaizen tells you when it misbehaves and catches the allowed-but-malicious. See the [ACA sandboxes case study](examples/aca-sandbox/).
+
 These are the open Kaizen clients. The managed control plane and console are at **[getkaizen.io](https://getkaizen.io)**. Full docs: **[docs.getkaizen.io](https://docs.getkaizen.io)**.
 
 ## Install
