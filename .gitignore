@@ -7,3 +7,14 @@ dist/
 node_modules/
 .venv/
 .env
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.venv/
+
+# Node
+node_modules/
