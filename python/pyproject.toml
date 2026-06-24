@@ -1,7 +1,7 @@
 [project]
 name = "kaizen-security"
-version = "0.1.5"
-description = "Pluggable enforcement for AI agent actions. Inspect every tool call and block known-bad."
+version = "0.2.0"
+description = "Runtime security for AI agents. Inspect every action, learn normal behaviour, flag what falls outside it, and block known-bad."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "Apache-2.0" }
