@@ -78,9 +78,9 @@ Two stages: a deterministic check on every action (the learned baseline plus wha
 
 ## Integrations
 
-**Available now:** Python SDK, TypeScript SDK, MCP shim, OpenAI Agents, LangChain, Vercel AI SDK, CrewAI, Semantic Kernel, LlamaIndex.
+**Available now:** Python SDK, TypeScript SDK, MCP shim, OpenAI Agents, LangChain, Vercel AI SDK, CrewAI, Semantic Kernel, LlamaIndex, Amazon Bedrock, Pydantic AI.
 
-**Coming soon:** Copilot Studio, Agent 365, Amazon Bedrock.
+**Coming soon:** Copilot Studio, Agent 365.
 
 **Export verdicts to:** OpenTelemetry, webhooks, Datadog, Splunk, Grafana, Microsoft Sentinel, Slack, PagerDuty.
 
