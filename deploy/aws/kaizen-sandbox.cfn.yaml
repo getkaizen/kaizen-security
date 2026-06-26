@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Kaizen Sandbox for Amazon Bedrock. Deploys the in-tenant detector as a Fargate task
+  (Firecracker microVM) in your VPC. It watches your Bedrock agents' reasoning traces and
+  real egress, decides with Claude on Bedrock through IAM, and sends out only the verdict.
+  Your behavioral data never leaves your account.
+
+Parameters:
+  KaizenApiKey:
+    Type: String
+    NoEcho: true
+    Description: Your Kaizen API key (kz_live_...). The verdict destination.
+  AgentName:
+    Type: String
+    Default: bedrock-agent
+    Description: The agent name verdicts are recorded under.
+  ModelId:
+    Type: String
+    Default: us.anthropic.claude-sonnet-4-6
+    Description: The Bedrock model the detector reasons with (your account must have access).
+  ImageUri:
+    Type: String
+    Default: public.ecr.aws/kaizen/kaizen-sandbox:latest
+    Description: The Kaizen Sandbox container image.
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+  KaizenApiUrl:
+    Type: String
+    Default: https://api.getkaizen.io
+
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: kaizen-sandbox
+      Tags: [{ Key: project, Value: kaizen-sandbox }]
+
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: ecs-tasks.amazonaws.com }
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: bedrock-invoke
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [bedrock:InvokeModel, bedrock:InvokeModelWithResponseStream]
+                Resource: "*"
+
+  ExecRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: ecs-tasks.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /kaizen/sandbox
+      RetentionInDays: 14
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Kaizen Sandbox, egress proxy and trace receiver
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8081
+          CidrIp: 10.0.0.0/8
+      Tags: [{ Key: project, Value: kaizen-sandbox }]
+
+  TaskDef:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: kaizen-sandbox
+      Cpu: "512"
+      Memory: "1024"
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ExecutionRoleArn: !GetAtt ExecRole.Arn
+      ContainerDefinitions:
+        - Name: kaizen-sandbox
+          Image: !Ref ImageUri
+          PortMappings:
+            - { ContainerPort: 8080 }
+            - { ContainerPort: 8081 }
+          Environment:
+            - { Name: KZ_AGENT, Value: !Ref AgentName }
+            - { Name: KZ_MODEL_BACKEND, Value: bedrock }
+            - { Name: KZ_MODEL, Value: !Ref ModelId }
+            - { Name: KAIZEN_API_URL, Value: !Ref KaizenApiUrl }
+            - { Name: KAIZEN_API_KEY, Value: !Ref KaizenApiKey }
+            - { Name: AWS_REGION, Value: !Ref AWS::Region }
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: sandbox
+
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition: !Ref TaskDef
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: [!Ref SubnetId]
+          SecurityGroups: [!Ref SecurityGroup]
+
+Outputs:
+  ClusterName:
+    Value: !Ref Cluster
+  Note:
+    Value: >
+      Point your action-group Lambdas' egress at the task on :8080 and post the Bedrock
+      reasoning trace to :8081. Only verdicts leave; raw behavior stays in your account.
