@@ -14,12 +14,6 @@ some need the agent framework and a model key.
 | MCP agent | [`mcp/`](mcp/) | the shim in front of the server; a poisoned tool caught |
 | RAG agent | [`rag/`](rag/) | a poisoned retrieved document triggers an out-of-purpose call |
 
-## The Kaizen Sandbox (the moat)
-
-| | | |
-| --- | --- | --- |
-| In-tenant agentic detector | [`kaizen-sandbox/`](kaizen-sandbox/) | runs in a microVM, watches traces + egress, decides locally with your model, sends only the verdict |
-
 ## Sandboxed agents (case studies)
 
 | Sandbox | Example | What it shows |
