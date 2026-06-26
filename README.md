@@ -5,6 +5,9 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-getkaizen.io-ff5722)](https://docs.getkaizen.io)
 
+> [!IMPORTANT]
+> **Introducing the Kaizen Sandbox:** it decides in your tenant, only the verdict leaves. The deepest deployment runs the whole decision inside a microVM next to your agent, with your own model key, so your behavioral data never leaves your environment. [Read more](https://docs.getkaizen.io/case-studies/kaizen-sandbox/)
+
 **Runtime security for the AI agents you build.** Kaizen inspects every action an agent takes (a tool call, a connection, a file or data access), learns its normal behaviour, and catches what falls outside it. It blocks known-bad and flags the rest, in your own environment, as it happens.
 
 > **Sandboxes make agents safe to run. Kaizen makes them safe to trust.** A sandbox contains an agent and blocks unknown hosts; it cannot tell you the agent exfiltrated to an *allowed* host, or that it stopped acting like itself. That is Kaizen.
